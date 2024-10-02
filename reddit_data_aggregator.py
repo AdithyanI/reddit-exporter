@@ -1,6 +1,6 @@
 import logging
-from reddit_client import fetch_top_posts
-from mongo_client import store_posts
+from reddit_client import RedditClient
+from mongo_client import MongoClientWrapper
 
 class RedditDataAggregator:
     def __init__(self):
@@ -12,14 +12,16 @@ class RedditDataAggregator:
                 logging.StreamHandler()
             ]
         )
+        self.reddit_client = RedditClient()
+        self.mongo_client = MongoClientWrapper()
     
     def run(self):
         try:
             logging.info("Starting Reddit Data Aggregator...")
-            posts = fetch_top_posts()
+            posts = self.reddit_client.fetch_top_posts()
             logging.info(f"Fetched {len(posts)} posts.")
             if posts:
-                store_posts(posts)
+                self.mongo_client.store_posts(posts)
                 logging.info("Data has been successfully stored in MongoDB.")
             else:
                 logging.info("No posts fetched, skipping storing to MongoDB.")
