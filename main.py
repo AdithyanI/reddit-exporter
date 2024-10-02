@@ -1,5 +1,5 @@
-from reddit_client.py import fetch_top_posts
-from mongo_client.py import store_posts
+from reddit_client import fetch_top_posts
+from mongo_client import store_posts
 
 def main():
     print("Starting Reddit Data Aggregator...")
