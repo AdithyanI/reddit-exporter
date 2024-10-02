@@ -21,7 +21,7 @@ This project aims to:
 
 ```
 reddit_data_aggregator/
-├── main.py
+├── reddit_data_aggregator.py
 ├── config.py
 ├── reddit_client.py
 ├── mongo_client.py
@@ -29,7 +29,7 @@ reddit_data_aggregator/
 └── README.md
 ```
 
-- **`main.py`**: The main script that orchestrates the data fetching and storing process.
+- **`reddit_data_aggregator.py`**: The main script that orchestrates the data fetching and storing process.
 - **`config.py`**: Contains all configurable settings such as API credentials and fetch parameters.
 - **`reddit_client.py`**: Handles interactions with the Reddit API.
 - **`mongo_client.py`**: Manages MongoDB connections and database operations.
@@ -101,7 +101,7 @@ All configuration settings are stored in the `config.py` file:
 1. **Run the Script**
 
    ```bash
-   python main.py
+   python reddit_data_aggregator.py
    ```
 
 2. **Verify Data Storage**

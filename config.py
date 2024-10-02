@@ -1,13 +1,17 @@
+from dotenv import load_dotenv
 import os
 
+# Load variables from .env file
+load_dotenv()
+
 # Reddit API Credentials
-CLIENT_ID = os.getenv('REDDIT_CLIENT_ID', 'your_client_id')
-CLIENT_SECRET = os.getenv('REDDIT_CLIENT_SECRET', 'your_client_secret')
-USER_AGENT = os.getenv('REDDIT_USER_AGENT', 'your_user_agent')
+CLIENT_ID = os.getenv('REDDIT_CLIENT_ID')
+CLIENT_SECRET = os.getenv('REDDIT_CLIENT_SECRET')
+USER_AGENT = os.getenv('REDDIT_USER_AGENT')
 
 # MongoDB Connection Details
-MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
-DATABASE_NAME = os.getenv('DATABASE_NAME', 'reddit_data')
+MONGO_URI = os.getenv('MONGO_URI')
+DATABASE_NAME = os.getenv('DATABASE_NAME')
 
 # Fetch Parameters
 SUBREDDITS = ['python', 'learnprogramming', 'datascience']

@@ -1,3 +1,4 @@
+import logging
 from pymongo import MongoClient
 from config import MONGO_URI, DATABASE_NAME
 
@@ -11,7 +12,11 @@ def get_database():
     return db
 
 def store_posts(posts):
-    db = get_database()
-    posts_collection = db['posts']
-    result = posts_collection.insert_many(posts)
-    print(f"Inserted {len(result.inserted_ids)} posts into the database.")
+    try:
+        db = get_database()
+        posts_collection = db['posts']
+        result = posts_collection.insert_many(posts)
+        logging.info(f"Inserted {len(result.inserted_ids)} posts into the database.")
+    except Exception as e:
+        logging.exception("An error occurred while storing posts to MongoDB.")
+        raise
