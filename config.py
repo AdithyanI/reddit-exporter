@@ -14,6 +14,6 @@ MONGO_URI = os.getenv('MONGO_URI')
 DATABASE_NAME = os.getenv('DATABASE_NAME')
 
 # Fetch Parameters
-SUBREDDITS = ['python', 'learnprogramming', 'datascience']
+SUBREDDITS = ['LocalLLaMA']
 NUM_POSTS = 10
 TIME_FILTER = 'week'  # Options: 'all', 'day', 'hour', 'month', 'week', 'year'

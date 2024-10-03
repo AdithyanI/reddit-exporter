@@ -9,6 +9,7 @@ class RedditClient:
             client_secret=CLIENT_SECRET,
             user_agent=USER_AGENT
         )
+        logging.info('Reddit client initialized')
     
     def fetch_top_posts(self):
         try:
