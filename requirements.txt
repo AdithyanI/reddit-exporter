@@ -1,3 +1,4 @@
 praw
 pymongo
 python-dotenv
+openai
