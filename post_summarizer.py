@@ -70,12 +70,12 @@ class PostSummarizer:
         self.subreddit = subreddit
         self.mongo_client = MongoClient(MONGO_URI)
         self.db = self.mongo_client["reddit"]
-        self.cache_collection = self.db[subreddit]
+        self.processed_collection = self.db["processed"]
         self.openai_client = OpenAIChatClient(system_prompt=SYSTEM_PROMPT)
 
     def generate_descriptions(self):
         # Fetch the document for the subreddit
-        document = self.cache_collection.find_one({"subreddit": self.subreddit})
+        document = self.processed_collection.find_one({"subreddit": self.subreddit})
         if not document:
             logging.error(f"No cached data found for subreddit '{self.subreddit}'. Aborting.")
             return
@@ -102,7 +102,7 @@ class PostSummarizer:
 
         # Update the document in MongoDB
         try:
-            self.cache_collection.update_one(
+            self.processed_collection.update_one(
                 {"subreddit": self.subreddit},
                 {"$set": {"posts": posts}}
             )
@@ -112,8 +112,8 @@ class PostSummarizer:
 
 
 if __name__ == "__main__":
-    # generator = PostSummarizer("LocalLLaMA")
-    # generator.generate_descriptions()
+    generator = PostSummarizer("LocalLLaMA")
+    generator.generate_descriptions()
 
-    exporter = JSONExporter("LocalLLaMA")
-    exporter.export_to_json()
+    # exporter = JSONExporter("LocalLLaMA")
+    # exporter.export_to_json()
