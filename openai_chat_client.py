@@ -108,7 +108,7 @@ class OpenAIChatClient:
     def __init__(self, system_prompt: str=SYSTEM_PROMPT_COMMENT_SUMMARY, model: str = "claude-3-5-sonnet"):
         self.client = OpenAI(
             api_key="sk-5ce0c5c0-4079-11ef-9254-173e6ea885c7",
-            base_url="http://192.168.2.210:4000"
+            base_url="http://217.86.140.15:4000"
         )
         self.system_prompt = system_prompt
         self.model = model

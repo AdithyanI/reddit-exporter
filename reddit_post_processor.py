@@ -1,5 +1,7 @@
 import logging
 
+import hashlib
+
 from openai_chat_client import OpenAIChatClient
 from reddit_client import RedditClient
 from datetime import datetime, timezone
@@ -13,10 +15,7 @@ class RedditPostProcessor:
     def __init__(self, subreddit):
         self.reddit_client = RedditClient(subreddit)
         self.subreddit = subreddit
-        self.mongo_client = MongoClient(MONGO_URI)
-        self.db = self.mongo_client["reddit"]
-        self.cache_collection = self.db[subreddit]
-        logging.info('RedditPostProcessor initialized with MongoDB connection.')
+        logging.info('RedditPostProcessor initialized.')
 
     def filter_posts(self, posts):
         sorted_posts = sorted(posts, key=lambda x: x['score'], reverse=True)
@@ -47,7 +46,7 @@ class RedditPostProcessor:
                     'text': comment['body'],
                     'score': comment['score']
                 }
-                next_comment_type = 'r' if comment_type == 'c' else 'r'
+                next_comment_type = 'r'
                 replies = self.filter_comments(comment.get('replies', []), parent_id=comment_id, comment_type=next_comment_type, is_top_level=False)
                 if replies:
                     filtered_comment['replies'] = replies
@@ -73,27 +72,38 @@ class RedditPostProcessor:
         return filtered_posts
 
     def process_subreddit(self):
-        # Check if processed posts already exist in MongoDB
-        cached_data = self.cache_collection.find_one({"subreddit": self.subreddit})
-        if cached_data:
-            logging.info(f"Processed posts for subreddit '{self.subreddit}' already exist in MongoDB. Skipping processing.")
-            return
-        
-        posts = self.reddit_client.fetch_top_posts()
-        
-        filtered_posts = self.filter_posts(posts)
-        comment_summarized_posts = self.summarize_comments(filtered_posts)
-        
-        # Store the processed posts in MongoDB
-        try:
-            self.cache_collection.insert_one({
-                "subreddit": self.subreddit,
-                "posts": comment_summarized_posts,
-                "created_at": datetime.utcnow()
-            })
-            logging.info(f"Stored processed posts for subreddit '{self.subreddit}' in MongoDB.")
-        except errors.PyMongoError as e:
-            logging.error(f"Error storing processed posts to MongoDB for subreddit {self.subreddit}: {str(e)}")
+        with MongoClient(MONGO_URI) as mongo_client:
+            db = mongo_client["reddit"]
+            cache_collection = db["processed"]
+
+            # Generate cache key based on today's date and subreddit
+            today_str = datetime.utcnow().strftime("%Y-%m-%d")
+            cache_key_input = f"{today_str}_{self.subreddit}"
+            cache_key = hashlib.sha256(cache_key_input.encode('utf-8')).hexdigest()
+
+            # Check if processed posts already exist in MongoDB
+            cached_data = cache_collection.find_one({"cache_key": cache_key})
+            if cached_data:
+                logging.info(f"Processed posts for subreddit '{self.subreddit}' on {today_str} already exist in MongoDB. Skipping processing.")
+                return
+            
+            posts = self.reddit_client.fetch_top_posts()
+            
+            filtered_posts = self.filter_posts(posts)
+            comment_summarized_posts = self.summarize_comments(filtered_posts)
+            
+            # Store the processed posts in MongoDB
+            try:
+                cache_collection.insert_one({
+                    "cache_key": cache_key,
+                    "subreddit": self.subreddit,
+                    "posts": comment_summarized_posts,
+                    "date": today_str,
+                    "created_at": datetime.utcnow()
+                })
+                logging.info(f"Stored processed posts for subreddit '{self.subreddit}' on {today_str} in MongoDB.")
+            except errors.PyMongoError as e:
+                logging.error(f"Error storing processed posts to MongoDB for subreddit {self.subreddit}: {str(e)}")
 
 def main():
     logging.basicConfig(level=logging.INFO)
