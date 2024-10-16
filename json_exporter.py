@@ -197,5 +197,5 @@ if __name__ == "__main__":
     # markdown_exporter = JSONExporter("LocalLLaMA")
     # markdown_exporter.export()
 
-    markdown_exporter = MarkdownExporter("LocalLLaMA")
+    markdown_exporter = MarkdownExporter("podcasting")
     markdown_exporter.export()

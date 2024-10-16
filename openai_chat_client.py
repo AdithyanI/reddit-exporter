@@ -104,8 +104,32 @@ Appreciation was shown for the technical insights shared, with a user expressing
 Overall, the comments reflect excitement about the new model's capabilities to run locally in the browser, questions about its technical implementation, and collaborative efforts to understand and optimize its performance."
 """
 
+
+SYSTEM_PROMPT_COMMENT_MIC = """
+You are given a Reddit post. Your task is to analyze the post only for microphone recommendations. Follow these steps:
+
+Mic Recommendations Detection:
+Check if there are any microphone recommendations mentioned in the post.
+If yes, extract the names of the microphones and summarize what the user said about each one. This includes any details such as pros, cons, or specific use cases.
+Output Format:
+If microphone recommendations are found, provide the microphone name(s) and the summary for each.
+If there are no microphone recommendations and the text is something else, return only the string "None".
+Example Output Format:
+
+Mic Recommendations:
+[Microphone Name 1]: Summary of what the user said about this mic.
+[Microphone Name 2]: Summary of what the user said about this mic.
+No Recommendations:
+None
+"""
+
+
+
+
+
+
 class OpenAIChatClient:
-    def __init__(self, system_prompt: str=SYSTEM_PROMPT_COMMENT_SUMMARY, model: str = "claude-3-5-sonnet"):
+    def __init__(self, system_prompt: str=SYSTEM_PROMPT_COMMENT_MIC, model: str = "claude-3.5-sonnet-bedrock"):
         self.client = OpenAI(
             api_key="sk-5ce0c5c0-4079-11ef-9254-173e6ea885c7",
             base_url="http://217.86.140.15:4000"
@@ -141,5 +165,5 @@ class OpenAIChatClient:
             raise e
         
 if __name__ == "__main__":
-    client = OpenAIChatClient("You are an AI assistant tasked with analyzing legal documents.")
+    client = OpenAIChatClient("You are an AI assistant tasked with analyzing legal documents.", model="claude-3-haiku")
     print(client.get_response("Hello, how are you?"))

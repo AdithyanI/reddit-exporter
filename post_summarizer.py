@@ -112,7 +112,7 @@ class PostSummarizer:
 
 
 if __name__ == "__main__":
-    generator = PostSummarizer("LocalLLaMA")
+    generator = PostSummarizer("podcasting")
     generator.generate_descriptions()
 
     # exporter = JSONExporter("LocalLLaMA")
